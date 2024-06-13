@@ -15,7 +15,7 @@ namespace Tic_Tac_Toe
         }
 
         private char _whichTurn = 'O';
-        Dictionary<char, Bitmap> _players = new Dictionary<char, Bitmap>()
+        Dictionary<char, Image> _players = new Dictionary<char, Image>()
         {
             ['O'] = Properties.Resources.O,
             ['X'] = Properties.Resources.X
@@ -24,7 +24,7 @@ namespace Tic_Tac_Toe
         private char[] _board = {'?', '?', '?',
                                  '?', '?', '?',
                                  '?', '?', '?'};
-        private char _checkWinners(byte pos1,byte pos2,byte pos3)
+        private char _checkPositions(byte pos1,byte pos2,byte pos3)
         {
             if((_board[pos1 - 1] == _board[pos2 - 1]) && (_board[pos2 - 1] == _board[pos3 - 1]))
             {
@@ -34,21 +34,21 @@ namespace Tic_Tac_Toe
         }
         private char _isWinner()
         {
-            char winner = _checkWinners(1,2,3);
+            char winner = _checkPositions(1,2,3);
             if (winner == '?')
-                winner = _checkWinners(4, 5, 6);
+                winner = _checkPositions(4, 5, 6);
             if (winner == '?')
-                winner = _checkWinners(7, 8, 9);
+                winner = _checkPositions(7, 8, 9);
             if (winner == '?')
-                winner = _checkWinners(1, 4, 7);
+                winner = _checkPositions(1, 4, 7);
             if (winner == '?')
-                winner = _checkWinners(2,5, 8);
+                winner = _checkPositions(2,5, 8);
             if (winner == '?')
-                winner = _checkWinners(3, 6, 9);
+                winner = _checkPositions(3, 6, 9);
             if (winner == '?')
-                winner = _checkWinners(1, 5, 9);
+                winner = _checkPositions(1, 5, 9);
             if (winner == '?')
-                winner = _checkWinners(3, 5, 7);
+                winner = _checkPositions(3, 5, 7);
 
             return winner;
         }
@@ -89,11 +89,16 @@ namespace Tic_Tac_Toe
             _whichTurn = (_whichTurn == 'O' ? 'X' : 'O');
             pbTurn.Image = _players[_whichTurn];
         }
-        private void _playPlayerTurn(PictureBox chosenCell)
+
+        private void _playTurn(PictureBox chosenCell)
         {
             _board[  Convert.ToByte(chosenCell.Tag)-1  ] = _whichTurn;
             chosenCell.Image = _players[_whichTurn];
             chosenCell.Enabled = false;
+        }
+        private void _playPlayerTurn(PictureBox chosenCell)
+        {
+            _playTurn(chosenCell);
         }
 
         private List<PictureBox> _getEmptyCells()
@@ -115,18 +120,14 @@ namespace Tic_Tac_Toe
         private void playComputerTurn()
         {
             List<PictureBox> emptyCells=_getEmptyCells();
-            Random rcell = new Random();
-            PictureBox playedPb = emptyCells[rcell.Next(0, emptyCells.Count-1)];
-            playedPb.Image = _players[_whichTurn];
-            playedPb.Enabled = false;
-            _board[Convert.ToByte(playedPb.Tag) - 1] = _whichTurn;
+            PictureBox playedCell = emptyCells[new Random().Next(0, emptyCells.Count-1)];
+            _playTurn(playedCell);
         }
 
         private void _startGame(PictureBox cell)
         {
             _playPlayerTurn(cell);
             
-
             if (_checkGameStatus())
                 return;
 
